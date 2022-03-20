@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from networkx.algorithms import bipartite
 from PIL import Image
+import general_functions
 
 
 x = ["x1", "x2", "x3", "x4", "x5", ""][::-1]
@@ -22,72 +23,67 @@ DataFrame = pd.DataFrame(
     {'x': x,
      'y': y})
 
+
 def create_gif():
     global num_of_pictures
     pictures = []
-    im = Image.open('graph1.jpg')
-    pictures.append(Image.open('graph2.jpg'))
+    im = Image.open('0.png')
+    pictures.append(Image.open('1.png'))
 
-    im.save("out.gif", save_all=True, append_images=pictures, duration=1000, loop=0)
+    im.save("gifs/out_task_7.gif", save_all=True, append_images=pictures, duration=1000, loop=0)
 
 
-def create_image(_graph, image_name):
+def create_image(_graph, image_name, pos):
     # colors = nx.get_edge_attributes(_graph, 'color').values()
 
     nx.draw(_graph, pos, edge_color="black", node_color='#cccccc', width=1, node_size=1000, with_labels=True)
     plt.gca().margins(0.10)  # отступы
 
     plt.savefig(image_name, dpi=600)
-    plt.show()
+    #plt.show()
+    plt.close()
+
 
 #####################################################################
+def main():
+    graph = nx.Graph()
+    edges = list()  # создаём список для хранения рёбер
 
-graph = nx.Graph()
-edges = list()  # создаём список для хранения рёбер
+    edges_string = random.choice(edges_random_list)
 
-edges_string = random.choice(edges_random_list)
+    for edge in [edges_string[x:x+8] for x in range(0, len(edges_string), 8)]:
+        edges.append([edge[1]+edge[2], edge[4]+edge[5]])  # преобразуем строку в список с рёбрами
 
-for edge in [edges_string[x:x+8] for x in range(0, len(edges_string), 8)]:
-    edges.append([edge[1]+edge[2], edge[4]+edge[5]])  # преобразуем строку в список с рёбрами
+    #print("Рёбра графа:", edges)
 
-print("Рёбра графа:", edges)
+    graph.add_nodes_from(DataFrame['x'], bipartite=0)  # связь
+    graph.add_nodes_from(DataFrame['y'], bipartite=1)
+    graph.remove_node("")
 
-graph.add_nodes_from(DataFrame['x'], bipartite=0)  # связь
-graph.add_nodes_from(DataFrame['y'], bipartite=1)
-graph.remove_node("")
+    for edge in edges:
+        graph.add_edge(edge[0], edge[1], color='#cccccc')
 
-for edge in edges:
-    graph.add_edge(edge[0], edge[1], color='#cccccc')
+    pos = {node: [0, i] for i, node in enumerate(DataFrame['x'])}
+    pos.update({node: [1, i] for i, node in enumerate(DataFrame['y'])})  # двудольный граф
 
-pos = {node: [0, i] for i, node in enumerate(DataFrame['x'])}
-pos.update({node: [1, i] for i, node in enumerate(DataFrame['y'])})  # двудольный граф
+    create_image(graph, "0.png", pos)
 
-create_image(graph, "graph1.jpg")
+    my_matching = bipartite.matching.hopcroft_karp_matching(graph, y)  # находим совершенное паросочетание
+    # print(my_matching)
 
-my_matching = bipartite.matching.hopcroft_karp_matching(graph, y)  # находим совершенное паросочетание
-# print(my_matching)
+    max_edges = list()
 
-max_edges = list()
+    graph.clear_edges()
 
+    for edge in edges:
+        if my_matching[edge[0]] == edge[1]:
+            max_edges.append([edge[0], edge[1]])
+            graph.add_edge(edge[0], edge[1], color='black')
 
-"""
-for edge in edges:
-    if my_matching[edge[0]] == edge[1]:
-        max_edges.append([edge[0], edge[1]])
-        graph.remove_edge(edge[0], edge[1])
-        graph.add_edge(edge[0], edge[1], color='black')"""
+    #print("Совершенное паросочетание:", max_edges)
 
+    create_image(graph, "1.png", pos)
 
-graph.clear_edges()
-
-for edge in edges:
-    if my_matching[edge[0]] == edge[1]:
-        max_edges.append([edge[0], edge[1]])
-        graph.add_edge(edge[0], edge[1], color='black')
-
-print("Совершенное паросочетание:", max_edges)
-
-create_image(graph, "graph2.jpg")
-
-create_gif()
+    create_gif()
+    general_functions.delete_pictures(2)
 
