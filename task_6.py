@@ -2,8 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from random import randint
 import copy
-from PIL import Image
-import os
+import general_functions
 
 
 def create_position(edges, edges2):
@@ -17,14 +16,16 @@ def create_position(edges, edges2):
     pos = nx.circular_layout(G)
 
 
-def show_graph(edges2, is_chord_or_cuts, title):
+def show_graph(edges2, is_chord_or_cuts, title, colors):
     if is_chord_or_cuts:
         global edge_colors
         edges2_ = []
         for i in range(len(edges2)):
             edges2_.append(edges2[i][0])
-
-        edge_colors = ['#DEB887' if edge in edges2_ else '#8B4513' for edge in G.edges()]
+        if colors:
+            edge_colors = ['#DEB887' if edge in edges2_ else '#8B4513' for edge in G.edges()]
+        else:
+            edge_colors = ['#8B4513' if edge in edges2_ else '#DEB887' for edge in G.edges()]
 
     node_labels = {node: node for node in G.nodes()}
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
@@ -35,6 +36,7 @@ def show_graph(edges2, is_chord_or_cuts, title):
     global num_of_pictures
     plt.savefig(f'{num_of_pictures}.png', dpi=400)
     num_of_pictures += 1
+    plt.close()
 
 
 def primsAlgorithm(vertices):
@@ -92,41 +94,32 @@ def get_cycles_cuts(edges, is_cuts):
                 edges_ = copy.deepcopy(edges)
                 edges_[i][j] = 0
                 if is_cuts:
-                    show_graph(get_edges(edges_), 1, 'cuts')
+                    show_graph(get_edges(edges_), 1, 'cuts', 0)
                 else:
-                    show_graph(get_edges(edges_), 1, 'cycles')
-
-
-
-def create_gif():
-    pictures = []
-    im = Image.open('0.png')
-    for picture in range(num_of_pictures):
-        pictures.append(Image.open(f'{picture}.png'))
-
-    im.save("out.gif", save_all=True, append_images=pictures, duration=2000, loop=0)
-
-
-def delete_pictures():
-    for picture in range(num_of_pictures):
-        os.remove(f'{picture}.png')
-
-
-
+                    show_graph(get_edges(edges_), 1, 'cycles', 1)
 
 
 num_of_pictures = 0
 
 
+def main():
+    vertices = (input('Введите количество вершин (число не менее 2): '))
+    while not general_functions.check_num(vertices):
+        vertices = (input('Введите количество вершин (число не менее 2): '))
+    vertices = int(vertices)
 
-A = primsAlgorithm(int(input('Введите порядок графа: ')))
-edges = get_edges(A[0])
-edges1 = get_edges(A[1])
-create_position(edges, edges1)
-show_graph(edges1, 1, 'spanning tree')
+    A = primsAlgorithm(vertices)
+    edges = get_edges(A[0])
+    edges1 = get_edges(A[1])
+    create_position(edges, edges1)
+    show_graph(edges1, 1, 'spanning tree', 1)
 
-get_cycles_cuts(A[1], 0)
-get_cycles_cuts(A[0], 1)
+    get_cycles_cuts(A[1], 0)
+    get_cycles_cuts(A[0], 1)
 
-create_gif()
-delete_pictures()
+    global num_of_pictures
+    general_functions.create_gif(num_of_pictures, 6)
+    general_functions.delete_pictures(num_of_pictures)
+
+    num_of_pictures = 0
+
