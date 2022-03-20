@@ -3,9 +3,6 @@ import os
 
 
 def create_gif(num_of_pictures, num_task):
-    if not os.path.exists("gifs"):
-        os.mkdir("gifs")
-
     pictures = []
     im = Image.open('0.png')
     for picture in range(num_of_pictures):
