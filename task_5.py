@@ -2,8 +2,7 @@ import copy
 import networkx as nx
 import matplotlib.pyplot as plt
 from random import randint
-from PIL import Image
-import os
+import general_functions
 
 
 def graph_generation(num_vertices):
@@ -67,9 +66,9 @@ def get_cycles_cuts(edges, is_cuts):
                 edges_ = copy.deepcopy(edges)
                 edges_[i][j] = 0
                 if is_cuts:
-                    show_graph(get_edges(edges_), 1, 'cuts')
+                    show_graph(get_edges(edges_), 1, 'cuts', 1)
                 else:
-                    show_graph(get_edges(edges_), 1, 'cycles')
+                    show_graph(get_edges(edges_), 1, 'cycles', 0)
 
 
 def create_position(edges):
@@ -80,55 +79,56 @@ def create_position(edges):
     edge_colors = 'black'
 
 
-def show_graph(edges, is_chord_or_cuts, title):
+def show_graph(edges, is_chord_or_cuts, title, is_cuts):
     if is_chord_or_cuts:
         global edge_colors
-        edge_colors = ['#BCBEC0' if edge in edges else 'black' for edge in G.edges()]
-
+        if is_cuts:
+            edge_colors = ['black' if edge in edges else '#BCBEC0' for edge in G.edges()]
+        else:
+            edge_colors = ['#BCBEC0' if edge in edges else 'black' for edge in G.edges()]
 
     node_labels = {node: node for node in G.nodes()}
     nx.draw_networkx_labels(G, position, labels=node_labels, font_size=12)
     nx.draw(G, pos=position, node_color='#ffd4fb', node_size=800, edge_color=edge_colors)
     plt.title(title)
     plt.gca().margins(0.10)
+
     global num_of_pictures
     plt.savefig(f'{num_of_pictures}.png', dpi=400)
     num_of_pictures += 1
 
-    #plt.show()
-
-
-def create_gif():
-    pictures = []
-    im = Image.open('0.png')
-    for picture in range(num_of_pictures):
-        pictures.append(Image.open(f'{picture}.png'))
-
-    im.save("out.gif", save_all=True, append_images=pictures, duration=2000, loop=0)
-
-
-def delete_pictures():
-    for picture in range(num_of_pictures):
-        os.remove(f'{picture}.png')
+    plt.close()
 
 
 num_of_pictures = 0
-vertices = int(input('Введите количество вершин: '))
 
-edges = graph_generation(vertices-1)
-adjacency_matrix = create_matrix(vertices, edges)
 
-edges = get_edges(adjacency_matrix)
-#print(get_edges(adjacency_matrix))
-create_position(edges)
-show_graph(edges, 0, 'graph')
+def main():
+    vertices = (input('Введите количество вершин (число не менее 2): '))
+    while not general_functions.check_num(vertices):
+        vertices = (input('Введите количество вершин (число не менее 2): '))
+    vertices = int(vertices)
 
-tree = spanning_tree_and_chords(adjacency_matrix, vertices)
-#print(get_edges(tree[0]), get_edges(tree[1]))
-show_graph(get_edges(tree[1]), 1, 'spanning tree')
+    edges = graph_generation(vertices-1)
+    adjacency_matrix = create_matrix(vertices, edges)
 
-get_cycles_cuts(tree[1], 0)
-get_cycles_cuts(tree[0], 1)
+    edges = get_edges(adjacency_matrix)
+    #print(get_edges(adjacency_matrix))
+    create_position(edges)
+    show_graph(edges, 0, 'graph', 0)
 
-create_gif()
-delete_pictures()
+    tree = spanning_tree_and_chords(adjacency_matrix, vertices)
+    #print(get_edges(tree[0]), get_edges(tree[1]))
+    show_graph(get_edges(tree[1]), 1, 'spanning tree', 0)
+
+    get_cycles_cuts(tree[1], 0)
+    get_cycles_cuts(tree[0], 1)
+
+    global num_of_pictures
+    general_functions.create_gif(num_of_pictures, 5)
+    general_functions.delete_pictures(num_of_pictures)
+
+    num_of_pictures = 0
+
+
+
