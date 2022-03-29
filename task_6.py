@@ -5,6 +5,7 @@ import copy
 import general_functions
 
 
+
 def create_position(edges, edges2):
     edges = edges + edges2
     global G, pos, edge_colors, edge_labels
@@ -54,6 +55,7 @@ def primsAlgorithm(vertices):
     positiveInf = float('inf')
     selectedVertices = [False for vertex in range(vertices)]
     chords_matrix = adjacencyMatrix
+    count = 0
     while (False in selectedVertices):
         minimum = positiveInf
         start = 0
@@ -72,6 +74,10 @@ def primsAlgorithm(vertices):
         mstMatrix[end][start] = mstMatrix[start][end]
 
         chords_matrix[start][end] = chords_matrix[end][start] = 0
+        count += 1
+        if count > 100:
+            print("Произошла ошибка.")
+            break
 
     return mstMatrix, chords_matrix
 
@@ -103,6 +109,13 @@ num_of_pictures = 0
 
 
 def main():
+    """!@brief
+    Данная программа производит построение каркаса, фундаментальной системы циклов и разрезов в нагруженном графе.
+        @author Каваллини Э.Д.
+        @date Март, 2022
+
+    """
+
     vertices = (input('Введите количество вершин (число не менее 2): '))
     while not general_functions.check_num(vertices):
         vertices = (input('Введите количество вершин (число не менее 2): '))
