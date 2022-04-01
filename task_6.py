@@ -2,11 +2,21 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from random import randint
 import copy
-import general_functions
-
+from tasks import general_functions
 
 
 def create_position(edges, edges2):
+    """!@brief
+        Функция для построения положения графа на полотне.
+
+        @arg G [Graph] — объект класса Graph.
+        @arg pos [dict] — координаты вершин графа.
+        @arg edge_colors [string] — цвет ребер.
+        @arg edge_labels [dict] — список весов ребер.
+
+        @param list $edges — список соединенных вершин (каркас).
+        @param list $edges2 — список соединенных вершин (хорды).
+        """
     edges = edges + edges2
     global G, pos, edge_colors, edge_labels
     G = nx.Graph()
@@ -18,6 +28,16 @@ def create_position(edges, edges2):
 
 
 def show_graph(edges2, is_chord_or_cuts, title, colors):
+    """!@brief
+        Функция для отрисовки графа на полотне.
+
+        @arg node_labels [list] — список номеров вершин.
+
+        @param list $edges2 — список соединенных вершин.
+        @param bool $is_chord_or_cuts — флаг для определения того, что передано в функцию (каркас или ФСЦ/разрезы).
+        @param string $title — текстовое обозначение того, что будет отрисовано.
+        @param bool $colors — флаг для определения того, что передается в функцию (ФСЦ или разрезы).
+        """
     if is_chord_or_cuts:
         global edge_colors
         edges2_ = []
@@ -40,10 +60,17 @@ def show_graph(edges2, is_chord_or_cuts, title, colors):
     plt.close()
 
 
-def primsAlgorithm(vertices):
+def create_matrix(vertices):
+    """!@brief
+        Функция для генерации ребер, их веса и создания матрицы смежности.
+
+        @arg adjacencyMatrix [list] — матрица смежности.
+
+        @param int $vertices — количество вершин.
+
+        @retval list $adjacencyMatrix — матрица смежности.
+        """
     adjacencyMatrix = [[0 for column in range(vertices)] for row in range(vertices)]
-    mstMatrix = [[0 for column in range(vertices)] for row in range(vertices)]
-    a=0
     for i in range(0, vertices):
         for j in range(i, vertices):
             if i == j:
@@ -52,6 +79,26 @@ def primsAlgorithm(vertices):
                 adjacencyMatrix[i][j] = int((randint(0, 20)))
                 adjacencyMatrix[j][i] = adjacencyMatrix[i][j]
 
+    return adjacencyMatrix
+
+
+def spanning_tree_and_chords(adjacencyMatrix, vertices):
+    """!@brief
+        Функция для поиска каркаса и хорд.
+
+        @arg mstMatrix [list] — матрица смежности, содержащая только каркас.
+        @arg chords_matrix [list] — матрица смежности, содержащая только хорды.
+        @arg selectedVertices [list] — список, показывающий связи, которые еще не добавлены в матрицу смежности.
+        @arg positiveInf [float] — большое число, чтобы сравнивать с другими числами для нахождение минимального числа.
+        @arg count [int] — счетчик для нейтрализации редкого зависания при поиске каркаса.
+
+        @param list $adjacencyMatrix — матрица смежности.
+        @param int $vertices — количество вершин.
+
+        @retval list $mstMatrix — матрица смежности, содержащая только каркас.
+        @retval list $chords_matrix — матрица смежности, содержащая только хорды.
+        """
+    mstMatrix = [[0 for column in range(vertices)] for row in range(vertices)]
     positiveInf = float('inf')
     selectedVertices = [False for vertex in range(vertices)]
     chords_matrix = adjacencyMatrix
@@ -83,6 +130,15 @@ def primsAlgorithm(vertices):
 
 
 def get_edges(adjacency_matrix):
+    """!@brief
+        Функция для преобразования матрицы смежности в список соединенных вершин.
+
+        @arg edges [list] — список для хранения ребер.
+
+        @param list $adjacency_matrix — матрица смежности.
+
+        @retval list $edges — cписок соединенных вершин.
+        """
     edges = []
     for i in range(len(adjacency_matrix)):
         for j in range(i, len(adjacency_matrix)):
@@ -94,6 +150,12 @@ def get_edges(adjacency_matrix):
 
 
 def get_cycles_cuts(edges, is_cuts):
+    """!@brief
+        Промежуточная функция передачи фундаментальной системы циклов и разрезов графа в функцию отрисовки графа.
+
+        @param bool $is_cuts — флаг для определения того, что необходимо найти (ФСЦ или разрезы).
+        @param list $edges — матрица смежности.
+        """
     for i in range(len(edges)):
         for j in range(i, len(edges)):
             if edges[i][j] > 0:
@@ -110,10 +172,11 @@ num_of_pictures = 0
 
 def main():
     """!@brief
-    Данная программа производит построение каркаса, фундаментальной системы циклов и разрезов в нагруженном графе.
+        Основная функция.
+        На основе введенного пользователем числа вершин случайным образом генерирует ребра и веса для нагруженного графа, ищет его каркас, фундаментальную систему циклов и разрезы.
+
         @author Каваллини Э.Д.
         @date Март, 2022
-
     """
 
     vertices = (input('Введите количество вершин (число не менее 2): '))
@@ -121,14 +184,17 @@ def main():
         vertices = (input('Введите количество вершин (число не менее 2): '))
     vertices = int(vertices)
 
-    A = primsAlgorithm(vertices)
-    edges = get_edges(A[0])
-    edges1 = get_edges(A[1])
+    matrix = create_matrix(vertices)
+
+    tree = spanning_tree_and_chords(matrix, vertices)
+
+    edges = get_edges(tree[0])
+    edges1 = get_edges(tree[1])
     create_position(edges, edges1)
     show_graph(edges1, 1, 'spanning tree', 1)
 
-    get_cycles_cuts(A[1], 0)
-    get_cycles_cuts(A[0], 1)
+    get_cycles_cuts(tree[1], 0)
+    get_cycles_cuts(tree[0], 1)
 
     global num_of_pictures
     general_functions.create_gif(num_of_pictures, 6)
