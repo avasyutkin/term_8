@@ -43,4 +43,5 @@
 4. Для внесения изменений в ветку `main` требуется подтверждение от двух участников проекта. 
  
    ### Структура репозитория 
-   ![](https://user-images.githubusercontent.com/43503189/159168827-11da78d6-55c4-45e5-8cb8-c4a01dc67999.png)
+   ![](https://user-images.githubusercontent.com/43503189/161304058-542ffb72-6504-4b66-997a-b54e218ea9fa.png)
+   
