@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from networkx.algorithms import bipartite
 from PIL import Image
-import general_functions
+from tasks import general_functions
 import os
 
 x = ["x1", "x2", "x3", "x4", "x5", ""][::-1]
@@ -26,6 +26,12 @@ DataFrame = pd.DataFrame(
 
 
 def create_gif():
+    """!@brief
+        Функция для создания gif на основе сохраненных в ходе работы программы изображений.
+
+        @arg pictures [list] — список для хранения изображений.
+        @arg im [Image] — объект класса Image.
+        """
     if not os.path.exists("gifs"):
         os.mkdir("gifs")
     global num_of_pictures
@@ -37,6 +43,13 @@ def create_gif():
 
 
 def create_image(_graph, image_name, pos):
+    """!@brief
+        Функция для отрисовки графа на полотне.
+
+        @param Graph $_graph — объект класса Graph.
+        @param int $image_name — имя файла, в котором будет сохранено изображение.
+        @param dict $pos — координаты вершин графа.
+        """
     # colors = nx.get_edge_attributes(_graph, 'color').values()
 
     nx.draw(_graph, pos, edge_color="black", node_color='#cccccc', width=1, node_size=1000, with_labels=True)
@@ -47,11 +60,22 @@ def create_image(_graph, image_name, pos):
     plt.close()
 
 
-def create_graph():
+def create_graph(edges_string):
+    """!@brief
+        Функция для генерации двудольного графа.
+
+        @arg _graph [Graph] — объект класса Graph.
+        @arg _edges [list] — список для хранения ребер.
+        @arg _pos [dict] — координаты вершин графа.
+
+        @param list $edges_string — матрица смежности.
+
+        @retval Graph $_graph — полученный двудольный граф.
+        @retval dict $_pos — координаты вершин графа.
+        @retval list $_edges — список соединенных вершин.
+        """
     _graph = nx.Graph()
     _edges = list()  # создаём список для хранения рёбер
-
-    edges_string = random.choice(edges_random_list)
 
     for edge in [edges_string[x:x + 8] for x in range(0, len(edges_string), 8)]:
         _edges.append([edge[1] + edge[2], edge[4] + edge[5]])  # преобразуем строку в список с рёбрами
@@ -72,6 +96,17 @@ def create_graph():
 
 
 def find_perfect_matching(_graph, _edges):
+    """!@brief
+        Функция поиска совершенного паросочетания в двудольном графе.
+
+        @arg my_matching [dict] — словарь совпадений левых и правых вершин.
+        @arg max_edges [list] — список для хранения совершенного паросочетания.
+
+        @param list $_edges — список соединенных вершин.
+        @param Graph $_graph — объект класса Graph.
+
+        @retval list $max_edges — список совершенного паросочетания.
+        """
     my_matching = bipartite.matching.hopcroft_karp_matching(_graph, y)  # находим совершенное паросочетание
 
     max_edges = list()
@@ -84,11 +119,20 @@ def find_perfect_matching(_graph, _edges):
             _graph.add_edge(edge[0], edge[1], color='black')
 
     # print("Совершенное паросочетание:", max_edges)
+    return max_edges
 
 
 #####################################################################
 def main():
-    graph, pos, edges = create_graph()
+    """!@brief
+        Основная функция.
+        Генерирует случайным образом и строит двудольный граф, ищет его совершенное паросочетание.
+
+        @author Москальчук У.В.
+        @date Март, 2022
+    """
+    edges_string = random.choice(edges_random_list)
+    graph, pos, edges = create_graph(edges_string)
     create_image(graph, "0.png", pos)  # весь граф
 
     find_perfect_matching(graph, edges)
