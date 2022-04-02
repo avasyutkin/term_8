@@ -8,13 +8,14 @@ from tasks import general_functions
 def graph_generation(num_vertices):
     """!@brief
         Функция для генерации ребер графа.
+
         @arg edges [list] — список для хранения ребер.
 
         @param int $num_vertices — количество вершин.
 
         @retval list $edges — cписок соединенных вершин.
         """
-    
+
     edges = []
     for i in range(num_vertices):
         for j in range(i, num_vertices):
@@ -26,6 +27,7 @@ def graph_generation(num_vertices):
 def create_matrix(vertices, edges):
     """!@brief
         Функция для создания матрицы смежности.
+
         @arg adjacency_matrix [list] — матрица смежности.
 
         @param int $vertices — количество вершин.
@@ -49,6 +51,7 @@ def create_matrix(vertices, edges):
 def spanning_tree_and_chords(adjacency_matrix, vertices):
     """!@brief
         Функция для поиска каркаса и хорд.
+
         @arg st_matrix [list] — матрица смежности, содержащая только каркас.
         @arg chords_matrix [list] — матрица смежности, содержащая только хорды.
         @arg selected_vertices [list] — список, показывающий связи, которые еще не добавлены в матрицу смежности.
@@ -83,6 +86,7 @@ def spanning_tree_and_chords(adjacency_matrix, vertices):
 def get_edges(adjacency_matrix):
     """!@brief
         Функция для преобразования матрицы смежности в список соединенных вершин.
+
         @arg edges [list] — список для хранения ребер.
 
         @param list $adjacency_matrix — матрица смежности.
@@ -180,7 +184,7 @@ def main():
         @author Васюткин А.О.
         @date Март, 2022
         """
-    
+
     vertices = (input('Введите количество вершин (число не менее 2): '))
     while not general_functions.check_num(vertices):
         vertices = (input('Введите количество вершин (число не менее 2): '))
