@@ -9,12 +9,12 @@
 ## Запуск проекта через Docker
 1. Скопировать образ:
    ``` 
-   docker pull edel2022/full_version:1
+   docker pull av56/tasks:1
    ```
 
 2. Развернуть образ в контейнере:
    ``` 
-   docker run -it --name tasks edel2022/full_version:1
+   docker run -it --name tasks av56/tasks:1
    ```
 
 3. Скопировать папку с gif на основную машину:
