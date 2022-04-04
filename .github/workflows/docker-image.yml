@@ -15,5 +15,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file Dockerfile --tag my-image-name:1
       
+    - name: publish_image
+      run: docker push av56/my-image-name:1
+
