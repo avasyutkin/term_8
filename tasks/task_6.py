@@ -179,9 +179,9 @@ def main():
         @date Март, 2022
     """
 
-    vertices = (input('Введите количество вершин (число не менее 2): '))
+    vertices = (input('Введите количество вершин (число от 2 до 15):'))
     while not general_functions.check_num(vertices):
-        vertices = (input('Введите количество вершин (число не менее 2): '))
+        vertices = (input('Введите количество вершин (число от 2 до 15):'))
     vertices = int(vertices)
 
     matrix = create_matrix(vertices)

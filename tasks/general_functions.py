@@ -42,7 +42,7 @@ def check_num(num):
     if not num.isnumeric():
         return False
 
-    elif int(num) < 2:
+    elif int(num) < 2 or int(num) > 15:
         return False
 
     else:
