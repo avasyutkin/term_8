@@ -44,5 +44,3 @@
  
    ### Структура репозитория 
    ![](https://user-images.githubusercontent.com/43503189/161320776-04a081a7-c3d5-4c08-a3df-798abbd92b56.png)
-
-
