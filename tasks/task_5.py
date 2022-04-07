@@ -2,7 +2,7 @@ import copy
 import networkx as nx
 import matplotlib.pyplot as plt
 from random import randint
-from tasks import general_functions
+import general_functions
 
 
 def graph_generation(num_vertices):
