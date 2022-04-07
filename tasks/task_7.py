@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from networkx.algorithms import bipartite
 from PIL import Image
-from tasks import general_functions
+import general_functions
 import os
 
 x = ["x1", "x2", "x3", "x4", "x5", ""][::-1]
