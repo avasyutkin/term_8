@@ -12,7 +12,3 @@ class TestTask5(unittest.TestCase):
     def test_task_5(self):
         spanning_tree = task_5.get_edges(task_5.spanning_tree_and_chords(task_5.create_matrix(test_data['vertices'], test_data['edges']), test_data['vertices'])[1])
         self.assertEqual(spanning_tree, test_data['spanning_tree'])
-
-
-
-
